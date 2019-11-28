@@ -2,7 +2,7 @@
 
 ## Docker
 
-`docker build -t tj2019 . && docker run -it tj2019`
+`docker build -t tj2019 . && docker run -p 8000:8000 -it tj2019`
 
 ## Development
 
