@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "dotenv -- nodemon -x node src/index.js"
+    "start": "dotenv -- nodemon -x node src/index.js",
+    "deployed-start": "node src/index.js"
   },
   "dependencies": {
     "cors": "2.8.5",
