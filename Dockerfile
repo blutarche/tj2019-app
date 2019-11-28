@@ -9,5 +9,6 @@ COPY package.json /src/package.json
 RUN yarn
 
 COPY . /src
+ENV PORT=8000
 EXPOSE 8000
 CMD yarn deployed-start
