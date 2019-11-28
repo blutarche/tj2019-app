@@ -9,3 +9,7 @@
 `npm install`
 
 `npm run start`
+
+## LICENSE
+
+This project is licensed under the terms of the WTFPL license. (So basically it's public domain)
