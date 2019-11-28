@@ -34,6 +34,15 @@ const variable = (req, res) => {
   mem[name] = numberValue
   res.sendStatus(201)
 }
+const getVariable = (req, res) => {
+  const { name } = req.params
+  const value = _.toNumber(mem[name])
+  if (_.isNaN(value)) {
+    res.status(400).send('No variable')
+    return
+  }
+  res.status(200).send({ value: value.toFixed(DECIMAL_PLACES) })
+}
 
 const calc = (req, res) => {
   const { expression } = req.body
@@ -72,4 +81,5 @@ const router = express.Router()
 router.post('/add', express.json(), add)
 router.post('/calc', express.json(), calc)
 router.put('/variable/:name', express.json(), variable)
+router.get('/variable/:name', express.json(), getVariable)
 exports.router = router
