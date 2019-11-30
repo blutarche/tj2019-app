@@ -78,11 +78,13 @@ const putRobotPosition = (req, res) => {
   if (result.error) {
     const err = result.error
     res.status(400).send({ message: err.message })
+    return
   }
   const { robotId } = req.params
   const robotIdMapped = getRobotId(robotId)
   if (!robotIdMapped) {
     res.status(400).send({ message: 'robotId invalid' })
+    return
   }
   const { position } = req.body
   robotMemory[robotId] = { id: robotId, position }
@@ -96,9 +98,12 @@ const getRobotPosition = (req, res) => {
   const robotIdMapped = getRobotId(robotId)
   if (!robotIdMapped) {
     res.status(404).send({ message: 'robotId invalid' })
+    return
   }
-  if (!robotMemory[robotId] || !robotMemory[robotId].position)
-    return res.sendStatus(404)
+  if (!robotMemory[robotId] || !robotMemory[robotId].position) {
+    res.sendStatus(404)
+    return
+  }
   res.send({
     position: robotMemory[robotId].position
   })

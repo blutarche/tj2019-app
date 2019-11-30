@@ -45,11 +45,13 @@ const getClosestPair = (req, res) => {
   const keys = Object.keys(robots)
   if (keys.length < 2) {
     res.status(424).send({ message: 'insufficient data' })
+    return
   }
   const positions = _.map(robots, r => r.position)
   const closestDistance = calculateClosestPair(positions)
   if (_.isUndefined(closestDistance) || _.isNull(closestDistance)) {
     res.status(424).send({ message: 'insufficient data' })
+    return
   }
   res.send({
     distance: closestDistance
