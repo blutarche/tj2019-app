@@ -52,7 +52,7 @@ const postReportAlienPosition = (req, res) => {
 }
 const getAlienPosition = (req, res) => {
   const { objectDNA } = req.params
-  console.log('TCL: getAlienPosition -> objectDNA', objectDNA)
+  // console.log('TCL: getAlienPosition -> objectDNA', objectDNA)
   if (!validateAlienId(objectDNA)) {
     res.status(424).send({ message: 'object_dna not valid' })
     return
@@ -61,9 +61,9 @@ const getAlienPosition = (req, res) => {
     res.status(424).send({ message: 'object_dna not valid' })
     return
   }
-  console.log('TCL: getAlienPosition -> alienMemory', alienMemory)
+  // console.log('TCL: getAlienPosition -> alienMemory', alienMemory)
   const reports = alienMemory[objectDNA]
-  console.log('TCL: getAlienPosition -> reports', reports)
+  // console.log('TCL: getAlienPosition -> reports', reports)
   if (reports.length < 3) {
     res.status(424).send({ message: 'insufficient data' })
     return
@@ -82,7 +82,7 @@ const getAlienPosition = (req, res) => {
     r3.y,
     r3.distance
   )
-  console.log('TCL: getAlienPosition -> position', position)
+  // console.log('TCL: getAlienPosition -> position', position)
   if (!position) {
     res.status(424).send({ message: 'insufficient data' })
     return
