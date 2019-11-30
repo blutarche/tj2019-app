@@ -2,6 +2,7 @@ const _ = require('lodash')
 const { getDistance, getManhattanDistance } = require('../utils/position')
 const { positionSchema, getRobotMemory } = require('./position')
 const { getRobotId } = require('../utils/robotId')
+const { calculateClosestPair } = require('../utils/closestPair')
 const Joi = require('joi')
 
 const findNearest = (req, res) => {
@@ -16,12 +17,10 @@ const findNearest = (req, res) => {
     return
   }
   const { ref_position, metric } = req.body
-  const robotPositions = getRobotMemory()
-  console.log('TCL: findNearest -> robotPositions', robotPositions)
+  const robots = getRobotMemory()
   const nearest = _.reduce(
-    robotPositions,
+    robots,
     (result, robot, robotId) => {
-      console.log('TCL: findNearest -> robot', robot)
       const dist =
         metric === 'manhattan'
           ? getManhattanDistance(robot.position, ref_position)
@@ -45,7 +44,6 @@ const findNearest = (req, res) => {
       id: -1
     }
   )
-  console.log('TCL: findNearest -> nearest', nearest)
   if (nearest.id === -1) {
     res.send({
       robot_ids: []
@@ -56,4 +54,22 @@ const findNearest = (req, res) => {
     robot_ids: [nearest.id]
   })
 }
+
+const getClosestPair = (req, res) => {
+  const robots = getRobotMemory()
+  const keys = Object.keys(robots)
+  if (keys.length < 2) {
+    res.status(424).send({ message: 'insufficient data' })
+  }
+  const positions = _.map(robots, r => r.position)
+  const closestDistance = calculateClosestPair(positions)
+  if (_.isUndefined(closestDistance) || _.isNull(closestDistance)) {
+    res.status(424).send({ message: 'insufficient data' })
+  }
+  res.send({
+    distance: closestDistance
+  })
+}
+
 exports.findNearest = findNearest
+exports.getClosestPair = getClosestPair

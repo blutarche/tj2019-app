@@ -4,7 +4,7 @@ const {
   putRobotPosition,
   getRobotPosition
 } = require('./position')
-const { findNearest } = require('./nearest')
+const { findNearest, getClosestPair } = require('./nearest')
 const { postReportAlienPosition, getAlienPosition } = require('./alien')
 
 const router = express.Router()
@@ -14,5 +14,6 @@ router.get('/robot/:robotId/position', express.json(), getRobotPosition)
 router.post('/nearest', express.json(), findNearest)
 router.post('/alien/:objectDNA/report', express.json(), postReportAlienPosition)
 router.get('/alien/:objectDNA/position', express.json(), getAlienPosition)
+router.get('/closestpair', express.json(), getClosestPair)
 
 exports.router = router
