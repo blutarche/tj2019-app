@@ -67,7 +67,7 @@ exports.southEastPositionSchema = Joi.object().keys({
     .min(0)
     .max(MAX)
     .required(),
-  west: Joi.number()
+  east: Joi.number()
     .strict()
     .integer()
     .min(0)
