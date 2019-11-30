@@ -51,14 +51,14 @@ const postDistance = (req, res) => {
   if (typeof first_pos === 'string') {
     robotId1 = first_pos.replace('robot#', '')
     robotId1 = getRobotId(robotId1)
-    pos1 = robotMemory[robotId1]
+    pos1 = robotMemory[robotId1] ? robotMemory[robotId1].position : null
   }
   let pos2 = second_pos
   let robotId2
   if (typeof second_pos === 'string') {
     robotId2 = second_pos.replace('robot#', '')
     robotId2 = getRobotId(robotId2)
-    pos2 = robotMemory[robotId2]
+    pos2 = robotMemory[robotId2] ? robotMemory[robotId2].position : null
   }
   if (!pos1 || !pos2) {
     res.sendStatus(424)
