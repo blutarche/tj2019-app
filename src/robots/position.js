@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const { getDistance, getManhattanDistance } = require('../utils/position')
-const { checkRobotIdValid } = require('../utils/robotId')
+const { getRobotId } = require('../utils/robotId')
 const Joi = require('joi')
 
 const positionSchema = Joi.object().keys({
@@ -17,6 +17,7 @@ const positionSchema = Joi.object().keys({
     .max(1000000000)
     .required()
 })
+exports.positionSchema = positionSchema
 let robotPosition = {}
 const regexRobotId = /^robot[#]([1-9][0-9]*)$/
 const postDistance = (req, res) => {
@@ -80,7 +81,8 @@ const putRobotPosition = (req, res) => {
     res.status(400).send({ message: err.message })
   }
   const { robotId } = req.params
-  if (!checkRobotIdValid(robotId)) {
+  const robotIdMapped = getRobotId(robotId)
+  if (!robotIdMapped) {
     res.status(400).send({ message: 'robotId invalid' })
   }
   const { position } = req.body
@@ -92,7 +94,8 @@ const putRobotPosition = (req, res) => {
 
 const getRobotPosition = (req, res) => {
   const { robotId } = req.params
-  if (!checkRobotIdValid(robotId)) {
+  const robotIdMapped = getRobotId(robotId)
+  if (!robotIdMapped) {
     res.status(404).send({ message: 'robotId invalid' })
   }
   if (!robotPosition[robotId]) return res.sendStatus(404)
@@ -101,6 +104,8 @@ const getRobotPosition = (req, res) => {
   })
 }
 
+const getRobotPostiionMemory = () => robotPosition
 exports.postDistance = postDistance
 exports.putRobotPosition = putRobotPosition
 exports.getRobotPosition = getRobotPosition
+exports.getRobotPositionMemory = getRobotPostiionMemory
