@@ -26,10 +26,16 @@ const findNearest = (req, res) => {
         metric === 'manhattan'
           ? getManhattanDistance(robot.position, ref_position)
           : getDistance(robot.position, ref_position)
+      const robotIdNumber = getRobotId(robotId)
       if (result.distance === -1 || dist < result.distance) {
         return {
           distance: dist,
-          id: getRobotId(robotId)
+          id: robotIdNumber
+        }
+      } else if (dist === result.distance && result.id < robotIdNumber) {
+        return {
+          distance: dist,
+          id: robotIdNumber
         }
       }
       return result
