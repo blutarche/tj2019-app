@@ -1,6 +1,7 @@
 const _ = require('lodash')
 const { getDistance, getManhattanDistance } = require('../utils/position')
-const { positionSchema, getRobotPositionMemory } = require('./position')
+const { positionSchema, getRobotMemory } = require('./position')
+const { getRobotId } = require('../utils/robotId')
 const Joi = require('joi')
 
 const findNearest = (req, res) => {
@@ -15,10 +16,12 @@ const findNearest = (req, res) => {
     return
   }
   const { ref_position, metric } = req.body
-  const robotPositions = getRobotPositionMemory()
+  const robotPositions = getRobotMemory()
+  console.log('TCL: findNearest -> robotPositions', robotPositions)
   const nearest = _.reduce(
     robotPositions,
     (result, robot, robotId) => {
+      console.log('TCL: findNearest -> robot', robot)
       const dist =
         metric === 'manhattan'
           ? getManhattanDistance(robot.position, ref_position)
@@ -26,7 +29,7 @@ const findNearest = (req, res) => {
       if (result.distance === -1 || dist < result.distance) {
         return {
           distance: dist,
-          id: robotId
+          id: getRobotId(robotId)
         }
       }
       return result
@@ -36,6 +39,7 @@ const findNearest = (req, res) => {
       id: -1
     }
   )
+  console.log('TCL: findNearest -> nearest', nearest)
   if (nearest.id === -1) {
     res.send({
       robot_ids: []

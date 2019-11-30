@@ -18,7 +18,7 @@ const positionSchema = Joi.object().keys({
     .required()
 })
 exports.positionSchema = positionSchema
-let robotPosition = {}
+let robotMemory = {}
 const regexRobotId = /^robot[#]([1-9][0-9]*)$/
 const postDistance = (req, res) => {
   const schema = Joi.object().keys({
@@ -51,13 +51,13 @@ const postDistance = (req, res) => {
   let robotId1
   if (typeof first_pos === 'string') {
     robotId1 = first_pos.replace('robot#', '')
-    pos1 = robotPosition[robotId1]
+    pos1 = robotMemory[robotId1]
   }
   let pos2 = second_pos
   let robotId2
   if (typeof second_pos === 'string') {
     robotId2 = second_pos.replace('robot#', '')
-    pos2 = robotPosition[robotId2]
+    pos2 = robotMemory[robotId2]
   }
   if (!pos1 || !pos2) {
     res.sendStatus(424)
@@ -86,7 +86,7 @@ const putRobotPosition = (req, res) => {
     res.status(400).send({ message: 'robotId invalid' })
   }
   const { position } = req.body
-  robotPosition[robotId] = position
+  robotMemory[robotId] = { id: robotId, position }
   res.status(204).send({
     position
   })
@@ -98,14 +98,15 @@ const getRobotPosition = (req, res) => {
   if (!robotIdMapped) {
     res.status(404).send({ message: 'robotId invalid' })
   }
-  if (!robotPosition[robotId]) return res.sendStatus(404)
+  if (!robotMemory[robotId] || !robotMemory[robotId].position)
+    return res.sendStatus(404)
   res.send({
-    position: robotPosition[robotId]
+    position: robotMemory[robotId].position
   })
 }
 
-const getRobotPostiionMemory = () => robotPosition
+const getRobotMemory = () => robotMemory
 exports.postDistance = postDistance
 exports.putRobotPosition = putRobotPosition
 exports.getRobotPosition = getRobotPosition
-exports.getRobotPositionMemory = getRobotPostiionMemory
+exports.getRobotMemory = getRobotMemory
