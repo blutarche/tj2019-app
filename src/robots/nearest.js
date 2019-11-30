@@ -32,7 +32,7 @@ const findNearest = (req, res) => {
           distance: dist,
           id: robotIdNumber
         }
-      } else if (dist === result.distance && result.id < robotIdNumber) {
+      } else if (dist === result.distance && robotIdNumber < result.id) {
         return {
           distance: dist,
           id: robotIdNumber
