@@ -10,7 +10,7 @@ exports.getManhattanDistance = (pos1, pos2) => {
   return Math.abs(diffX) + Math.abs(diffY)
 }
 
-const EPSILON = 0.000001
+const EPSILON = 1e-2
 exports.calculateThreeCircleIntersection = (
   x0,
   y0,

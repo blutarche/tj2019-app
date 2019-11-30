@@ -38,11 +38,10 @@ const postReportAlienPosition = (req, res) => {
   if (!alienMemory[objectDNA]) {
     alienMemory[objectDNA] = []
   }
-  const alien = alienMemory[objectDNA]
-  const existed = _.some(alien, report => {
+  const existed = _.some(alienMemory[objectDNA], report => {
     return report.x === robot.position.x && report.y === robot.position.y
   })
-  if (!existed) {
+  if (alienMemory[objectDNA].length === 0 || !existed) {
     alienMemory[objectDNA].push({
       x: robot.position.x,
       y: robot.position.y,
@@ -53,6 +52,7 @@ const postReportAlienPosition = (req, res) => {
 }
 const getAlienPosition = (req, res) => {
   const { objectDNA } = req.params
+  console.log('TCL: getAlienPosition -> objectDNA', objectDNA)
   if (!validateAlienId(objectDNA)) {
     res.status(424).send({ message: 'object_dna not valid' })
     return
@@ -61,7 +61,9 @@ const getAlienPosition = (req, res) => {
     res.status(424).send({ message: 'object_dna not valid' })
     return
   }
-  const reports = alienMemory[objectDNA] || []
+  console.log('TCL: getAlienPosition -> alienMemory', alienMemory)
+  const reports = alienMemory[objectDNA]
+  console.log('TCL: getAlienPosition -> reports', reports)
   if (reports.length < 3) {
     res.status(424).send({ message: 'insufficient data' })
     return
@@ -80,11 +82,17 @@ const getAlienPosition = (req, res) => {
     r3.y,
     r3.distance
   )
+  console.log('TCL: getAlienPosition -> position', position)
   if (!position) {
     res.status(424).send({ message: 'insufficient data' })
     return
   }
-  res.send({ position })
+  res.send({
+    position: {
+      x: Math.round(position.x),
+      y: Math.round(position.y)
+    }
+  })
 }
 
 exports.postReportAlienPosition = postReportAlienPosition
