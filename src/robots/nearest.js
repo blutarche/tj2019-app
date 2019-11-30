@@ -1,11 +1,12 @@
 const _ = require('lodash')
-const { getDistance } = require('../utils/position')
+const { getDistance, getManhattanDistance } = require('../utils/position')
 const { positionSchema, getRobotPositionMemory } = require('./position')
 const Joi = require('joi')
 
 const findNearest = (req, res) => {
   const schema = Joi.object().keys({
-    ref_position: positionSchema
+    ref_position: positionSchema,
+    metric: Joi.string().valid('euclidean', 'manhattan')
   })
   const result = Joi.validate(req.body, schema)
   if (result.error) {
@@ -13,12 +14,15 @@ const findNearest = (req, res) => {
     res.status(400).send({ message: err.message })
     return
   }
-  const { ref_position } = req.body
+  const { ref_position, metric } = req.body
   const robotPositions = getRobotPositionMemory()
   const nearest = _.reduce(
     robotPositions,
     (result, robot, robotId) => {
-      const dist = getDistance(robot.position, ref_position)
+      const dist =
+        metric === 'manhattan'
+          ? getManhattanDistance(robot.position, ref_position)
+          : getDistance(robot.position, ref_position)
       if (result.distance === -1 || dist < result.distance) {
         return {
           distance: dist,
