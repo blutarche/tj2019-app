@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const { getDistance, getManhattanDistance } = require('../utils/position')
-const { getRobotId } = require('../utils/robotId')
+const { regexRobotId, getRobotId } = require('../utils/robotId')
 const Joi = require('joi')
 
 const positionSchema = Joi.object().keys({
@@ -19,7 +19,6 @@ const positionSchema = Joi.object().keys({
 })
 exports.positionSchema = positionSchema
 let robotMemory = {}
-const regexRobotId = /^robot[#]([1-9][0-9]*)$/
 const postDistance = (req, res) => {
   const schema = Joi.object().keys({
     first_pos: Joi.alternatives()
@@ -106,7 +105,9 @@ const getRobotPosition = (req, res) => {
 }
 
 const getRobotMemory = () => robotMemory
+const getRobotById = robotId => robotMemory[robotId]
 exports.postDistance = postDistance
 exports.putRobotPosition = putRobotPosition
 exports.getRobotPosition = getRobotPosition
 exports.getRobotMemory = getRobotMemory
+exports.getRobotById = getRobotById
