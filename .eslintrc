@@ -1,0 +1,12 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "import/no-nodejs-modules": 0,
+    "no-sparse-arrays": 0,
+    "no-undef": "error"
+  }
+}
