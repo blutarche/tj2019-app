@@ -8,6 +8,9 @@ const Joi = require('joi')
 const findNearest = (req, res) => {
   const schema = Joi.object().keys({
     ref_position: positionSchema,
+    k: Joi.number()
+      .strict()
+      .integer(),
     metric: Joi.string().valid('euclidean', 'manhattan')
   })
   const result = Joi.validate(req.body, schema)
@@ -16,42 +19,24 @@ const findNearest = (req, res) => {
     res.status(400).send({ message: err.message })
     return
   }
-  const { ref_position, metric } = req.body
+  const { ref_position, k = 1, metric } = req.body
   const robots = getRobotMemory()
-  const nearest = _.reduce(
-    robots,
-    (result, robot, robotId) => {
-      const dist =
-        metric === 'manhattan'
-          ? getManhattanDistance(robot.position, ref_position)
-          : getDistance(robot.position, ref_position)
-      const robotIdNumber = getRobotId(robotId)
-      if (result.distance === -1 || dist < result.distance) {
-        return {
-          distance: dist,
-          id: robotIdNumber
-        }
-      } else if (dist === result.distance && robotIdNumber < result.id) {
-        return {
-          distance: dist,
-          id: robotIdNumber
-        }
-      }
-      return result
-    },
-    {
-      distance: -1,
-      id: -1
+  const distances = _.map(robots, (robot, robotId) => {
+    const dist =
+      metric === 'manhattan'
+        ? getManhattanDistance(robot.position, ref_position)
+        : getDistance(robot.position, ref_position)
+    const robotIdNumber = getRobotId(robotId)
+    return {
+      distance: dist,
+      id: robotIdNumber
     }
-  )
-  if (nearest.id === -1) {
-    res.send({
-      robot_ids: []
-    })
-    return
-  }
+  })
+  const sorted = _.sortBy(distances, ['distance', 'id'])
+  const sliced = _.slice(sorted, 0, k)
+  const ids = _.map(sliced, 'id')
   res.send({
-    robot_ids: [nearest.id]
+    robot_ids: ids
   })
 }
 
