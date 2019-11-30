@@ -1,13 +1,14 @@
 const _ = require('lodash')
 const { getDistance, getManhattanDistance } = require('../utils/position')
-const { positionSchema, getRobotMemory } = require('./position')
+const { xyPositionSchema } = require('../utils/positionSchema')
+const { getRobotMemory } = require('./position')
 const { getRobotId } = require('../utils/robotId')
 const { calculateClosestPair } = require('../utils/closestPair')
 const Joi = require('joi')
 
 const findNearest = (req, res) => {
   const schema = Joi.object().keys({
-    ref_position: positionSchema,
+    ref_position: xyPositionSchema,
     k: Joi.number()
       .strict()
       .integer(),

@@ -97,3 +97,17 @@ exports.calculateThreeCircleIntersection = (
   }
   return null
 }
+
+const convertLegacyPosition = legacyPos => {
+  return {
+    x: !_.isUndefined(legacyPos.east) ? legacyPos.east : -legacyPos.west,
+    y: !_.isUndefined(legacyPos.north) ? legacyPos.north : -legacyPos.south
+  }
+}
+exports.convertLegacyPosition = convertLegacyPosition
+
+exports.convertPosition = pos => {
+  if (_.isUndefined(pos.x) || _.isUndefined(pos.y))
+    return convertLegacyPosition(pos)
+  return pos
+}

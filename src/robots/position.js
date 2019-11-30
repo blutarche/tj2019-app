@@ -1,40 +1,40 @@
 const _ = require('lodash')
-const { getDistance, getManhattanDistance } = require('../utils/position')
+const {
+  getDistance,
+  getManhattanDistance,
+  convertPosition
+} = require('../utils/position')
 const { regexRobotId, getRobotId } = require('../utils/robotId')
 const Joi = require('joi')
+const {
+  xyPositionSchema,
+  northWestPositionSchema,
+  northEastPositionSchema,
+  southWestPositionSchema,
+  southEastPositionSchema
+} = require('../utils/positionSchema')
 
-const positionSchema = Joi.object().keys({
-  x: Joi.number()
-    .strict()
-    .integer()
-    .min(-1000000000)
-    .max(1000000000)
-    .required(),
-  y: Joi.number()
-    .strict()
-    .integer()
-    .min(-1000000000)
-    .max(1000000000)
-    .required()
-})
-exports.positionSchema = positionSchema
 let robotMemory = {}
 const postDistance = (req, res) => {
   const schema = Joi.object().keys({
     first_pos: Joi.alternatives()
       .try(
-        positionSchema,
-        Joi.string()
-          .regex(regexRobotId)
-          .required()
+        xyPositionSchema,
+        northWestPositionSchema,
+        northEastPositionSchema,
+        southWestPositionSchema,
+        southEastPositionSchema,
+        Joi.string().regex(regexRobotId)
       )
       .required(),
     second_pos: Joi.alternatives()
       .try(
-        positionSchema,
-        Joi.string()
-          .regex(regexRobotId)
-          .required()
+        xyPositionSchema,
+        northWestPositionSchema,
+        northEastPositionSchema,
+        southWestPositionSchema,
+        southEastPositionSchema,
+        Joi.string().regex(regexRobotId)
       )
       .required(),
     metric: Joi.string().valid('euclidean', 'manhattan')
@@ -62,6 +62,8 @@ const postDistance = (req, res) => {
     res.sendStatus(424)
     return
   }
+  pos1 = convertPosition(pos1)
+  pos2 = convertPosition(pos2)
   res.send({
     distance:
       metric === 'manhattan'
@@ -72,7 +74,15 @@ const postDistance = (req, res) => {
 
 const putRobotPosition = (req, res) => {
   const schema = Joi.object().keys({
-    position: positionSchema.required()
+    position: Joi.alternatives()
+      .try(
+        xyPositionSchema,
+        northWestPositionSchema,
+        northEastPositionSchema,
+        southWestPositionSchema,
+        southEastPositionSchema
+      )
+      .required()
   })
   const result = Joi.validate(req.body, schema)
   if (result.error) {
@@ -86,7 +96,8 @@ const putRobotPosition = (req, res) => {
     res.status(400).send({ message: 'robotId invalid' })
     return
   }
-  const { position } = req.body
+  const { position: unconvertedPos } = req.body
+  const position = convertPosition(unconvertedPos)
   robotMemory[robotId] = { id: robotId, position }
   res.status(204).send({
     position
